@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Туулган кунунуз менен жаным АПАМ!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #ffe6ee 0%, #ffc2d4 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #59253a;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 0.6s ease forwards;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1, h2 {
+      margin-bottom: 20px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    /* --- ЭКРАН 1: КОНВЕРТ --- */
+    .envelope-wrapper {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .envelope-wrapper:hover {
+      transform: scale(1.05);
+    }
+    .envelope {
+      position: relative;
+      width: 280px;
+      height: 180px;
+      background: #ff758f;
+      border-radius: 10px;
+      box-shadow: 0 15px 30px rgba(255, 77, 109, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px;
+    }
+    .envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-left: 140px solid transparent;
+      border-right: 140px solid transparent;
+      border-top: 105px solid #ff4d6d;
+      border-radius: 10px 10px 0 0;
+      transform-origin: top;
+      transition: transform 0.6s ease;
+      z-index: 2;
+    }
+    .envelope.open::before {
+      transform: rotateX(180deg);
+    }
+    .heart-seal {
+      position: relative;
+      z-index: 3;
+      width: 45px;
+      height: 45px;
+      background: #fff0f3;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .envelope-label {
+      font-family: 'Caveat', cursive;
+      font-size: 32px;
+      color: #800f2f;
+    }
+    .hint {
+      font-size: 13px;
+      opacity: 0.75;
+      margin-top: 8px;
+    }
+
+    /* --- ЭКРАН 2: ВОПРОС И КНОПКИ --- */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+      min-height: 120px;
+    }
+    button {
+      border: none;
+      border-radius: 50px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    #yesBtn {
+      background: #ff4d6d;
+      color: white;
+      padding: 15px 35px;
+      font-size: 18px;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+      z-index: 10;
+    }
+    #noBtn {
+      background: #fff0f3;
+      color: #800f2f;
+      padding: 15px 30px;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+   /* --- ЭКРАН 3: УДИВИТЕЛЬНЫЕ ПОДАРОЧНЫЕ КОРОБКИ (2x2) --- */
+    .gifts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      justify-content: center;
+      margin: 25px auto;
+      max-width: 580px;
+      width: 100%;
+    }
+    .gift-box {
+      position: relative;
+      background: linear-gradient(145deg, #ffffff 0%, #fff0f5 100%);
+      border: 2px solid #ffb3c6;
+      border-radius: 26px;
+      padding: 36px 22px 28px; /* Было 24px 15px 18px — коробка станет крупнее */
+      min-height: 195px; /* Добавляем высоту, чтобы боксы были большими */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 12px 25px rgba(255, 77, 109, 0.2), inset 0 0 15px rgba(255, 194, 212, 0.4);
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      animation: floatGift 3s ease-in-out infinite;
+    }
+
+    /* Разная задержка плавания, чтобы коробки ожили */
+    .gift-box:nth-child(2) { animation-delay: 0.4s; }
+    .gift-box:nth-child(3) { animation-delay: 0.8s; }
+    .gift-box:nth-child(4) { animation-delay: 1.2s; }
+
+    @keyframes floatGift {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Подарочная ленточка и бантик сверху */
+    .gift-box::before {
+      content: '🎀';
+      position: absolute;
+      top: 4px;
+      right: 14px;
+      font-size: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+      transition: transform 0.3s ease;
+    }
+    /* Золотистая вертикальная лента на фоне */
+    .gift-box::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 100%;
+      background: rgba(255, 182, 193, 0.22);
+      z-index: 0;
+    }
+
+    .gift-box:hover {
+      transform: translateY(-10px) scale(1.05);
+      border-color: #ff4d6d;
+      box-shadow: 0 18px 35px rgba(255, 77, 109, 0.35);
+      animation-play-state: paused;
+    }
+    .gift-box:hover::before {
+      transform: rotate(15deg) scale(1.2);
+    }
+
+    .gift-icon {
+      position: relative;
+      z-index: 1;
+      font-size: 62px; /* Было 46px — иконка станет большой */
+      margin-bottom: 14px;
+      display: block;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+    .gift-title {
+      position: relative;
+      z-index: 1;
+      font-size: 19px; /* Было 15px */
+      font-weight: 700;
+      color: #6e142c;
+      display: block;
+    }
+    .gift-subtitle {
+      position: relative;
+      z-index: 1;
+      font-size: 13px; /* Было 11px */
+      color: #a35268;
+      margin-top: 6px;
+      display: block;
+    }
+    /* Стили для 4-го подарка (Волшебный купон) */
+    .coupon-card {
+      background: linear-gradient(135deg, #fff9ec 0%, #ffe8cc 100%);
+      border: 2px dashed #d49a55;
+      border-radius: 18px;
+      padding: 25px 20px;
+      margin-top: 12px;
+      position: relative;
+      box-shadow: 0 10px 25px rgba(180, 120, 50, 0.15);
+    }
+    .coupon-badge {
+      background: #ff4d6d;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .coupon-text {
+      font-family: 'Caveat', cursive;
+      font-size: 28px;
+      color: #5c2a16;
+      line-height: 1.3;
+      margin: 10px 0 15px;
+    }
+    .claim-btn {
+      background: linear-gradient(135deg, #ff4d6d 0%, #c9184a 100%);
+      color: white;
+      padding: 12px 26px;
+      font-size: 15px;
+      border-radius: 30px;
+      box-shadow: 0 6px 15px rgba(255, 77, 109, 0.35);
+    }
+/* --- РЕАЛИСТИЧНАЯ КУПЮРА 5 000 СОМ --- */
+    .banknote-5000 {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      margin: 12px auto 16px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(110, 20, 35, 0.35), 0 0 0 2px #d4a359;
+      transform: rotate(-1.5deg);
+      transition: transform 0.3s ease;
+    }
+    .banknote-5000:hover {
+      transform: rotate(0deg) scale(1.03);
+    }
+    .banknote-5000 svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    /* Переливающийся голографический блик по купюре */
+    .banknote-5000::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.35),
+        transparent
+      );
+      animation: shineBill 3.5s infinite;
+    }
+    @keyframes shineBill {
+      0% { left: -100%; }
+      50%, 100% { left: 150%; }
+    }
+
+    .finish-btn {
+      margin-top: 25px;
+      background: #800f2f;
+      color: white;
+      padding: 14px 36px;
+      font-size: 16px;
+    }
+
+    /* --- МОДАЛЬНЫЕ ОКНА ДЛЯ ПОДАРКОВ --- */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(89, 37, 58, 0.6);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff0f3;
+      border-radius: 24px;
+      padding: 25px;
+      max-width: 450px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease;
+    }
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 18px;
+      background: #ffccd5;
+      color: #800f2f;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* --- СТИЛИ ДЛЯ АЛЬБОМА В СТИЛЕ СКРАПБУК --- */
+    .album-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(65, 25, 40, 0.72);
+      backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      z-index: 100;
+    }
+    .album-modal.active {
+      display: flex;
+    }
+    .album-container {
+      background: linear-gradient(145deg, #f3bbc8 0%, #e59eb0 100%);
+      border-radius: 28px;
+      padding: 25px 20px 20px;
+      max-width: 860px;
+      width: 96%;
+      position: relative;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255,255,255,0.5);
+      animation: fadeIn 0.4s ease;
+      text-align: center;
+    }
+    /* Заголовок как бумажный стикер */
+    .album-title {
+      font-family: 'Caveat', cursive;
+      font-size: 32px;
+      color: #5c2a38;
+      margin-bottom: 18px;
+      display: inline-block;
+      background: #fff9f2;
+      padding: 4px 28px;
+      border-radius: 4px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      border-left: 3px dashed #e0cfc1;
+      border-right: 3px dashed #e0cfc1;
+      transform: rotate(-0.5deg);
+    }
+
+    .book-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 5px auto 15px;
+    }
+
+    /* ТЁМНО-КОРИЧНЕВАЯ ОБЛОЖКА (СЫРТЫ) + СЛОИ СТРАНИЦ */
+    .album-book {
+      display: grid;
+      grid-template-columns: 1.35fr 26px 1fr;
+      /* Текстура бумаги в мелкую клетку */
+      background-color: #fcf8f2;
+      background-image: 
+        linear-gradient(to right, rgba(210, 195, 180, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(210, 195, 180, 0.25) 1px, transparent 1px);
+      background-size: 16px 16px;
+      border-radius: 8px;
+      padding: 22px 24px;
+      width: 100%;
+      max-width: 760px;
+      min-height: 440px;
+      position: relative;
+      /* Эффект слоёных страниц + коричневая твёрдая обложка снаружи */
+      box-shadow:
+        /* Слой 1-й страницы */
+        -4px 0 0 #f4ede4, 4px 0 0 #f4ede4, 0 3px 0 #f4ede4,
+        -5px 0 0 #d8cbb8, 5px 0 0 #d8cbb8, 0 4px 0 #d8cbb8,
+        /* Слой 2-й страницы */
+        -9px 0 0 #efe6da, 9px 0 0 #efe6da, 0 7px 0 #efe6da,
+        -10px 0 0 #cbbba4, 10px 0 0 #cbbba4, 0 8px 0 #cbbba4,
+        /* Слой 3-й страницы */
+        -13px 0 0 #e6dac8, 13px 0 0 #e6dac8, 0 11px 0 #e6dac8,
+        /* ТЁМНО-КОРИЧНЕВАЯ ОБЛОЖКА АЛЬБОМА */
+        -22px -6px 0 #6e4e37,
+        22px -6px 0 #6e4e37,
+        -22px 18px 0 #5a3e2b,
+        22px 18px 0 #5a3e2b,
+        0 24px 35px rgba(40, 22, 12, 0.45);
+    }
+
+    /* СПИРАЛЬ / КРУЖЕВНЫЕ КОЛЬЦА ПОСЕРЕДИНЕ */
+    .book-spring {
+      position: relative;
+      width: 26px;
+      height: 102%;
+      align-self: center;
+      /* Тень сгиба посередине страниц */
+      background: linear-gradient(to right, rgba(0,0,0,0.06), rgba(0,0,0,0.14) 50%, rgba(0,0,0,0.06));
+    }
+    .book-spring::before {
+      content: '';
+      position: absolute;
+      inset: 6px 0;
+      /* Отверстия (дырочки) в бумаге по бокам */
+      background-image: 
+        radial-gradient(circle at 3px 10px, #4a3525 3.5px, transparent 4px),
+        radial-gradient(circle at 23px 10px, #4a3525 3.5px, transparent 4px);
+      background-size: 26px 24px;
+    }
+    .book-spring::after {
+      content: '';
+      position: absolute;
+      inset: 6px 2px;
+      /* Металлические двойные колечки спирали */
+      background-image: linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 7px,
+        #4e4944 7px,
+        #b8b2aa 9px,
+        #3a3632 11px,
+        transparent 11px,
+        transparent 13px,
+        #4e4944 13px,
+        #b8b2aa 15px,
+        #3a3632 17px,
+        transparent 17px,
+        transparent 24px
+      );
+      background-size: 100% 24px;
+    }
+
+    /* Левая страница с фото */
+    .left-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-right: 12px;
+    }
+
+    /* ПОЛАРОИД-РАМКА, КОТОРАЯ ПОДСТРАИВАЕТСЯ ПОД ФОРМУ КАЖДОГО ФОТО */
+    .photo-frame {
+      background: #ffffff;
+      padding: 10px 10px 14px 10px;
+      border: 1px solid #eadfd5;
+      box-shadow: 0 6px 18px rgba(70, 45, 30, 0.16);
+      transform: rotate(-1.5deg);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+      position: relative;
+    }
+    /* Уголки для вклейки фото как в альбоме */
+    .photo-frame::before,
+    .photo-frame::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #d9bca3;
+      opacity: 0.85;
+      z-index: 2;
+    }
+    .photo-frame::before {
+      top: -4px;
+      left: -4px;
+      clip-path: polygon(0 0, 100% 0, 0 100%);
+    }
+    .photo-frame::after {
+      bottom: -4px;
+      right: -4px;
+      clip-path: polygon(100% 100%, 0 100%, 100% 0);
+    }
+
+    /* ФОТО НЕ ОБРЕЗАЕТСЯ И ПРИНИМАЕТ СВОЮ ФОРМУ */
+    .photo-frame img {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 310px;
+      object-fit: contain;
+      display: block;
+      border-radius: 2px;
+      transition: opacity 0.2s ease;
+    }
+
+    .photo-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 25px;
+      color: #4a2c20;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+
+    /* Правая страница (декор с сердечками) */
+    .right-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding-left: 12px;
+      position: relative;
+    }
+    .album-deco {
+      font-size: 52px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+    .album-deco-text {
+      font-family: 'Caveat', cursive;
+      font-size: 26px;
+      color: #8c6458;
+    }
+
+    /* Стрелочки по бокам */
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff8f0;
+      border: 2px solid #c9a88e;
+      color: #6e4e37;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 12px rgba(60, 35, 20, 0.25);
+      transition: all 0.2s;
+      z-index: 15;
+    }
+    .nav-arrow:hover {
+      background: #f5e6d8;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .arrow-left { left: -6px; }
+    .arrow-right { right: -6px; }
+
+    /* Пагинация внизу */
+    .album-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #9c6b78;
+      border-radius: 50%;
+      opacity: 0.35;
+      transition: all 0.3s;
+    }
+    .dot.active {
+      opacity: 1;
+      transform: scale(1.35);
+      background: #6e4e37;
+    }
+    .album-page-counter {
+      font-size: 14px;
+      color: #5c2a38;
+      margin-top: 22px;
+      font-weight: 600;
+    }
+
+    /* --- ДЕТАЛЬНЫЙ ВИНТАЖНЫЙ ПРОИГРЫВАТЕЛЬ --- */
+    .turntable-wrap {
+      position: relative;
+      width: 220px;
+      height: 210px;
+      margin: 15px auto 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Мягкое свечение при воспроизведении */
+    .turntable-wrap.is-playing::before {
+      content: '';
+      position: absolute;
+      width: 195px;
+      height: 195px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 77, 109, 0.35) 0%, transparent 70%);
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.12); opacity: 1; }
+    }
+
+    .vinyl {
+      position: relative;
+      width: 184px;
+      height: 184px;
+      border-radius: 50%;
+      /* Реалистичные дорожки и световой перелив */
+      background:
+        conic-gradient(
+          from 35deg,
+          transparent 0deg,
+          rgba(255, 255, 255, 0.14) 25deg,
+          transparent 55deg,
+          transparent 180deg,
+          rgba(255, 255, 255, 0.14) 205deg,
+          transparent 235deg
+        ),
+        repeating-radial-gradient(
+          circle at center,
+          #141414 0px,
+          #141414 2px,
+          #262626 3px,
+          #181818 4px
+        );
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35), inset 0 0 0 3px #0d0d0d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spinVinyl 6s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .vinyl.playing {
+      animation-play-state: running;
+    }
+
+    @keyframes spinVinyl {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Золотисто-розовая этикетка в центре */
+    .vinyl-label {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ff758f 0%, #c9184a 100%);
+      border: 3px solid #f5d77f;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff8f0;
+      font-size: 7px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .vinyl-label span {
+      margin-top: -14px;
+    }
+
+    /* Отверстие под шпиндель */
+    .vinyl-hole {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff5f7;
+      border: 2px solid #d4a359;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Игла проигрывателя (тонарм) */
+    .tonearm {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 58px;
+      height: 115px;
+      pointer-events: none;
+      transform-origin: 42px 16px;
+      transform: rotate(-28deg);
+      transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 3;
+    }
+
+    /* Когда музыка играет — игла опускается на пластинку */
+    .turntable-wrap.is-playing .tonearm {
+      transform: rotate(-4deg);
+    }
+
+    .tonearm-base {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #f5d77f, #b8862d);
+      border: 2px solid #fff;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .tonearm-stick {
+      position: absolute;
+      top: 22px;
+      right: 14px;
+      width: 4px;
+      height: 76px;
+      background: linear-gradient(90deg, #e0e0e0, #9e9e9e);
+      border-radius: 3px;
+      transform: rotate(12deg);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .tonearm-head {
+      position: absolute;
+      bottom: 12px;
+      left: 22px;
+      width: 11px;
+      height: 16px;
+      background: #c9184a;
+      border-radius: 3px;
+      transform: rotate(24deg);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Летающие ноты во время воспроизведения */
+    .music-notes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .turntable-wrap.is-playing .music-notes {
+      opacity: 1;
+    }
+
+    .music-notes span {
+      position: absolute;
+      font-size: 18px;
+      color: #ff4d6d;
+      animation: floatNote 2.6s ease-in-out infinite;
+    }
+
+    .music-notes span:nth-child(1) { left: 6px; bottom: 30px; animation-delay: 0s; }
+    .music-notes span:nth-child(2) { left: 18px; top: 20px; animation-delay: 0.9s; font-size: 15px; }
+    .music-notes span:nth-child(3) { right: 12px; bottom: 24px; animation-delay: 1.7s; }
+
+    @keyframes floatNote {
+      0% { transform: translateY(0) scale(0.8) rotate(-10deg); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-42px) scale(1.15) rotate(15deg); opacity: 0; }
+    }
+
+    .song-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 23px;
+      color: #7a283d;
+      margin-bottom: 14px;
+    }
+    .play-btn {
+      background: #ff4d6d;
+      color: white;
+      padding: 12px 28px;
+      font-size: 15px;
+      margin-top: 10px;
+    }
+
+    /* Письмо */
+    .letter-paper {
+      background: white;
+      padding: 25px 20px;
+      border-radius: 14px;
+      font-family: 'Caveat', cursive;
+      font-size: 24px;
+      line-height: 1.4;
+      text-align: left;
+      color: #4a1c2d;
+      box-shadow: inset 0 0 15px rgba(255, 182, 193, 0.3);
+      margin-top: 10px;
+      white-space: pre-line;
+    }
+
+    /* --- ЭКРАН 4: ФИНАЛ --- */
+    .cake {
+      font-size: 90px;
+      margin: 15px 0;
+      animation: bounce 1.5s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(105vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ЭКРАН 1: КОНВЕРТ -->
+  <div id="screen1" class="screen active">
+    <div class="envelope-wrapper" onclick="openEnvelope()">
+      <div class="envelope" id="envelope">
+        <div class="heart-seal">💌</div>
+      </div>
+      <!-- ИЗМЕНИТЕ ЗДЕСЬ: Впишите имя получателя -->
+      <div class="envelope-label">Для Мамы ✨</div>
+      <div class="hint">Нажмите на конверт, чтобы открыть</div>
+    </div>
+  </div>
+
+  <!-- ЭКРАН 2: УБЕГАЮЩАЯ КНОПКА -->
+  <div id="screen2" class="screen">
+    <h2>У меня для вас кое-что есть...<br>Открываем? 🎁</h2>
+    <div class="btn-group">
+      <button id="yesBtn" onclick="goToGifts()">Да!</button>
+      <button id="noBtn" onclick="runAway()">Нет</button>
+    </div>
+  </div>
+
+ <!-- ЭКРАН 3: ЧЕТЫРЕ ПОДАРОЧНЫЕ КОРОБКИ -->
+  <div id="screen3" class="screen">
+    <h2>Выбирайте любой подарок ✨</h2>
+    <div class="gifts-grid">
+      <div class="gift-box" onclick="openModal('modalPhotos')">
+        <span class="gift-icon">📸</span>
+        <span class="gift-title">Наши моменты</span>
+        <span class="gift-subtitle">Нажмите, чтобы открыть</span>
+      </div>
+      <div class="gift-box" onclick="openModal('modalMusic')">
+        <span class="gift-icon">🎶</span>
+        <span class="gift-title">Песня лично от меня</span>
+        <span class="gift-subtitle">Включить пластинку</span>
+      </div>
+      <div class="gift-box" onclick="openModal('modalLetter')">
+        <span class="gift-icon">📜</span>
+        <span class="gift-title">Письмо для вас</span>
+        <span class="gift-subtitle">Тёплые слова</span>
+      </div>
+      <div class="gift-box" onclick="openModal('modalCoupon')">
+        <span class="gift-icon">🎫</span>
+        <span class="gift-title">Золотой купон</span>
+        <span class="gift-subtitle">Особый сюрприз!</span>
+      </div>
+    </div>
+    <button class="finish-btn" onclick="finishCard()">Завершить 🎉</button>
+  </div>
+
+  <!-- ЭКРАН 4: ФИНАЛ -->
+  <div id="screen4" class="screen">
+    <div class="cake">🎂</div>
+    <h1>С Днём Рождения Мама! 🥳</h1>
+    <p>Пусть этот год принесёт море счастья, улыбок и исполнения самых заветных желаний!</p>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 1: АЛЬБОМ С ПЕРЕЛИСТЫВАНИЕМ -->
+  <div id="modalPhotos" class="album-modal">
+    <div class="album-container">
+      <button class="close-modal" onclick="closeModal('modalPhotos')">✕</button>
+      <span class="album-title">Наши лучшие кадры 💕</span>
+      
+      <div class="book-wrapper">
+        <!-- Кнопки Назад / Вперед -->
+        <button class="nav-arrow arrow-left" onclick="prevSlide()">‹</button>
+        <button class="nav-arrow arrow-right" onclick="nextSlide()">›</button>
+
+        <div class="album-book">
+          <!-- Левая страница с текущим фото -->
+          <div class="left-page">
+            <div class="photo-frame">
+              <img id="albumPhoto" src="photo1.jpg" alt="Фото">
+            </div>
+            <div id="albumCaption" class="photo-caption">Самые лучшие моменты ✨</div>
+          </div>
+          
+          <!-- Пружина по центру -->
+          <div class="book-spring"></div>
+          
+          <!-- Правая страница с декором -->
+          <div class="right-page">
+            <div class="album-deco">💝</div>
+            <div class="album-deco-text">Любимые воспоминания...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Номера страниц и точки пагинации -->
+      <div class="album-page-counter" id="pageCounter">1 из 6</div>
+      <div class="album-dots" id="albumDots">
+        <!-- Скрипт сам добавит точки -->
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 2: МУЗЫКА -->
+  <div id="modalMusic" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modalMusic')">✕</button>
+      <h3 style="padding: 0 26px;">Песня, которая напоминает о вас 🎧</h3>
+
+      <div class="turntable-wrap" id="turntableWrap">
+        <div class="music-notes">
+          <span>♪</span>
+          <span>♫</span>
+          <span>♩</span>
+        </div>
+
+        <div class="vinyl" id="vinylRecord">
+          <div class="vinyl-label">
+            <span> for mom</span>
+            <div class="vinyl-hole"></div>
+          </div>
+        </div>
+
+        <div class="tonearm">
+          <div class="tonearm-base"></div>
+          <div class="tonearm-stick"></div>
+          <div class="tonearm-head"></div>
+        </div>
+      </div>
+
+      <audio id="bgMusic" src="song.m4a" loop></audio>
+      <button class="play-btn" id="playPauseBtn" onclick="toggleMusic()">▶ Включить</button>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО 3: ПИСЬМО -->
+  <div id="modalLetter" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modalLetter')">✕</button>
+      <h3>Несколько тёплых слов 💌</h3>
+      <!-- ИЗМЕНИТЕ ЗДЕСЬ: Напишите свой текст поздравления -->
+      <div class="letter-paper"> Сизге...
+
+Алтын апам, менин эң кымбатым, майрамыңыз менен! Сиз мен үчүн дүйнөдөгү эң кымбат адамсыз, жашоодогу башкы багытым, эргүүм, жөлөгүм жана колдоочу периштемсиз.
+Ушул өзгөчө күнү сизге чексиз сүйүүңуз жана уйкусуз өткөргөн түндөрүңуз, түгөнбөгөн сабырыңыз жана мен өзүмө ишенбей турган учурларда да мага дайыма ишенгениңиз үчүн чын жүрөктөн ыраазычылык билдиргим келет. Ар бир мүнөттө жанымда болуп, эң акылман кеңешиңизди берип, жылуу жылмаюуңуз менен кубаттап турганыңызга рахмат.
+Сизге чын дилимден эң башкысы — бекем ден соолук, жан дүйнө тынчтыгын жана чексиз бакыт каалайм. Көздөрүңуз ар дайым кубанычтан жанып турсун, үйүбүздөн кут-береке, ынтымак кетпесин, түйшүктөр алыс болуп, бардык тилектериңиз сөзсүз орундалсын. Ар бир көз ирмемден ырахат алып, узак, жаркын жана бактылуу өмүр сүрунуз. Биз сизди абдан катуу жакшы көрөбуз жана биз үчүн кылган бардык жакшылыктарыңызды баалайбыз! ❤️</div>
+    </div>
+  </div>
+
+<!-- МОДАЛЬНОЕ ОКНО 4: ЗОЛОТОЙ КУПОН -->
+  <div id="modalCoupon" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('modalCoupon')">✕</button>
+      <h3>Особый подарок для Мамы 👑</h3>
+      <div class="coupon-card">
+        <span class="coupon-badge">Подарочный сертификат</span>
+
+        <!-- НОВАЯ ЗЕЛЁНАЯ КУПЮРА 5 000 СОМ -->
+        <div class="banknote-5000" style="box-shadow: 0 12px 28px rgba(27, 67, 50, 0.35), 0 0 0 2px #40916c;">
+          <svg viewBox="0 0 420 195" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Изумрудно-зелёный градиент новой купюры -->
+              <linearGradient id="newSomBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#84b89e"/>
+                <stop offset="50%" stop-color="#a8d5be"/>
+                <stop offset="100%" stop-color="#6fa68a"/>
+              </linearGradient>
+              <!-- Правая светло-серо-зелёная часть -->
+              <linearGradient id="rightWave" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#cce3d8"/>
+                <stop offset="100%" stop-color="#96c4ae"/>
+              </linearGradient>
+              <!-- Золотая голограмма слева -->
+              <linearGradient id="goldHolo" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8c6218"/>
+                <stop offset="40%" stop-color="#f5d77f"/>
+                <stop offset="70%" stop-color="#a67c2e"/>
+                <stop offset="100%" stop-color="#ffe89e"/>
+              </linearGradient>
+              <!-- Гравюрный зелёный цвет портрета -->
+              <linearGradient id="greenPortrait" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#1b4332"/>
+                <stop offset="100%" stop-color="#081c15"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Фон купюры -->
+            <rect width="420" height="195" rx="6" fill="url(#newSomBg)"/>
+            
+            <!-- Плавная дуга справа как на новой банкноте -->
+            <path d="M265 0 Q220 98 205 195 L420 195 L420 0 Z" fill="url(#rightWave)" opacity="0.85"/>
+
+            <!-- Защитная ныряющая нить посередине -->
+            <rect x="256" y="0" width="9" height="195" fill="#2d6a4f" opacity="0.45"/>
+            <line x1="260.5" y1="0" x2="260.5" y2="195" stroke="#d8f3dc" stroke-width="1" stroke-dasharray="10 8"/>
+
+            <!-- Фоновые горы и национальный орнамент -->
+            <path d="M180 75 L205 40 L225 65 L245 35 L268 75 Z" fill="#40916c" opacity="0.25"/>
+            <circle cx="105" cy="95" r="46" fill="none" stroke="#2d6a4f" stroke-width="1.2" stroke-dasharray="4 3" opacity="0.35"/>
+
+            <!-- Крупный номинал 5000 в левом верхнем углу -->
+            <text x="14" y="44" font-family="Arial Black, sans-serif" font-size="38" font-weight="900" fill="#1b4332" letter-spacing="-1">5000</text>
+
+            <!-- Золотая голограмма с узором слева -->
+            <rect x="36" y="60" width="30" height="68" rx="4" fill="url(#goldHolo)" opacity="0.9"/>
+            <circle cx="51" cy="94" r="10" fill="none" stroke="#4a3208" stroke-width="1.5"/>
+            <text x="64" y="122" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="#2d3a1e" transform="rotate(-90 64 122)">5000</text>
+
+            <!-- Портрет Суйменкула Чокморова -->
+            <g fill="url(#greenPortrait)">
+              <path d="M74 166 C80 136, 108 124, 142 124 C174 124, 192 138, 198 166 Z"/>
+              <polygon points="126,124 142,148 156,124" fill="#d8f3dc"/>
+              <rect x="132" y="106" width="20" height="22" rx="5"/>
+              <path d="M116 74 C116 44, 174 44, 174 74 C175 96, 164 114, 145 114 C126 114, 115 96, 116 74 Z"/>
+              <path d="M114 70 C112 38, 142 28, 166 36 C178 41, 178 60, 174 70 C168 50, 124 50, 114 70 Z"/>
+              <path d="M133 93 Q145 89 157 93 Q145 96 133 93 Z" fill="#081c15"/>
+            </g>
+
+            <!-- Подпись под портретом -->
+            <text x="142" y="164" font-family="Arial, sans-serif" font-size="5.5" fill="#d8f3dc" text-anchor="middle">Сүймөнкул Чокморов 1939-1992</text>
+
+            <!-- Надпись КЫРГЫЗ БАНКЫ справа сверху -->
+            <text x="404" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1b4332" text-anchor="end" letter-spacing="0.5">КЫРГЫЗ БАНКЫ</text>
+            <text x="342" y="34" font-family="Arial, sans-serif" font-size="5" fill="#2d6a4f" text-anchor="end">ТӨРАГА</text>
+            <path d="M348 35 Q362 24 372 34 T396 28" fill="none" stroke="#1b4332" stroke-width="1"/>
+
+            <!-- Цветной ромбовидный орнамент справа -->
+            <g transform="translate(290, 95)">
+              <polygon points="0,-16 14,0 0,16 -14,0" fill="none" stroke="#c85a32" stroke-width="2"/>
+              <polygon points="0,-9 8,0 0,9 -8,0" fill="#2d6a4f"/>
+            </g>
+
+            <!-- Нижняя надпись БЕШ МИҢ СОМ слева -->
+            <text x="52" y="184" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#1b4332" letter-spacing="0.8">БЕШ МИҢ СОМ</text>
+
+            <!-- Крупный номинал 5000 в правом нижнем углу -->
+            <text x="404" y="184" font-family="Arial Black, sans-serif" font-size="34" font-weight="900" fill="#1b4332" text-anchor="end" letter-spacing="-1">5000</text>
+          </svg>
+        </div>
+
+        <div class="coupon-text" id="couponText">
+          На любые ваши желания, покупки и приятные эмоции!<br>
+          С Днём Рождения, самая любимая! ❤️
+        </div>
+        <button class="claim-btn" id="claimBtn" onclick="claimCoupon()">✨ Забрать 5 000 сом</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let noClickCount = 0;
+    const noPhrases = [
+      "Серьёзно?",
+      "Ну пожалуйста 🥺",
+      "Не нажимайте сюда!",
+      "Это последний шанс!",
+      "Кнопка сломалась 😜"
+    ];
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function openEnvelope() {
+      document.getElementById('envelope').classList.add('open');
+      setTimeout(() => showScreen('screen2'), 700);
+    }
+
+    function runAway() {
+      const noBtn = document.getElementById('noBtn');
+      const yesBtn = document.getElementById('yesBtn');
+
+      // "Нет" баскычынын жазуусун өз ордунда алмаштыруу
+      noBtn.textContent = noPhrases[noClickCount % noPhrases.length];
+      noClickCount++;
+
+      // "Да" баскычын акырындык менен чоңойтуу
+      const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+      yesBtn.style.fontSize = (currentSize + 8) + 'px';
+      yesBtn.style.padding = (15 + noClickCount * 5) + 'px ' + (35 + noClickCount * 10) + 'px';
+    }
+
+      
+    function goToGifts() {
+      showScreen('screen3');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+   function toggleMusic() {
+      const audio = document.getElementById('bgMusic');
+      const vinyl = document.getElementById('vinylRecord');
+      const wrap = document.getElementById('turntableWrap');
+      const btn = document.getElementById('playPauseBtn');
+
+      if (audio.paused) {
+        audio.play();
+        vinyl.classList.add('playing');
+        wrap.classList.add('is-playing');
+        btn.textContent = '⏸ Пауза';
+      } else {
+        audio.pause();
+        vinyl.classList.remove('playing');
+        wrap.classList.remove('is-playing');
+        btn.textContent = '▶ Включить';
+      }
+    }
+
+    function finishCard() {
+      showScreen('screen4');
+      launchConfetti();
+    }
+
+    function launchConfetti() {
+      const colors = ['#ff4d6d', '#ff8fa3', '#ffb3c1', '#ffd166', '#ffffff'];
+      for (let i = 0; i < 60; i++) {
+        const conf = document.createElement('div');
+        conf.classList.add('confetti');
+        conf.style.left = Math.random() * 100 + 'vw';
+        conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        conf.style.animationDelay = (Math.random() * 1.5) + 's';
+        document.body.appendChild(conf);
+      }
+    }
+
+    // ДАННЫЕ ДЛЯ АЛЬБОМА (вставляете сюда)
+    const albumData = [
+      { src: "image.png", caption: "Счастливы вместе ❤️" },
+      { src: "image1.png", caption: "Давние фото 🎉" },
+      { src: "image2.png", caption: "Самые веселые мгновения 🤩" },
+      { src: "image3.png", caption: "Всегда рядом 🥰" },
+      { src: "image4.png", caption: "Гордимся с дочкой ✨" },
+      { src: "image5.png", caption: "На память о празднике 📸" },
+      { src: "image6.png", caption: "Любимые моменты 💖" },
+      { src: "image7.png", caption: "Приятный день 🌸" },
+      { src: "image8.png", caption: "С днём рождения! 🥳" }
+    ];
+
+    let currentAlbumIndex = 0;
+
+    function initAlbum() {
+      const dotsContainer = document.getElementById('albumDots');
+      dotsContainer.innerHTML = '';
+      albumData.forEach((_, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        if (index === 0) dot.classList.add('active');
+        dotsContainer.appendChild(dot);
+      });
+      updateAlbumView();
+    }
+
+    function updateAlbumView() {
+      const photoEl = document.getElementById('albumPhoto');
+      const captionEl = document.getElementById('albumCaption');
+      const counterEl = document.getElementById('pageCounter');
+      const dots = document.querySelectorAll('.album-dots .dot');
+
+      photoEl.style.opacity = 0;
+      setTimeout(() => {
+        photoEl.src = albumData[currentAlbumIndex].src;
+        captionEl.textContent = albumData[currentAlbumIndex].caption;
+        counterEl.textContent = `${currentAlbumIndex + 1} из ${albumData.length}`;
+        
+        dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === currentAlbumIndex);
+        });
+        
+        photoEl.style.opacity = 1;
+      }, 150);
+    }
+
+    function nextSlide() {
+      currentAlbumIndex = (currentAlbumIndex + 1) % albumData.length;
+      updateAlbumView();
+    }
+
+    function prevSlide() {
+      currentAlbumIndex = (currentAlbumIndex - 1 + albumData.length) % albumData.length;
+      updateAlbumView();
+    }
+
+    const originalOpenModal = openModal;
+    openModal = function(id) {
+      if (id === 'modalPhotos') {
+        currentAlbumIndex = 0;
+        initAlbum();
+      }
+      originalOpenModal(id);
+    }
+    function claimCoupon() {
+      const btn = document.getElementById('claimBtn');
+      btn.textContent = '✅ Подарок на 5000 сом активирован!';
+      btn.style.background = '#2b9348';
+      launchConfetti();
+    }
+  </script>
+</body>
+</html>
+</body>
+</html>
